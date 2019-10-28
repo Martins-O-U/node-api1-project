@@ -13,8 +13,52 @@ server.get('/api/users/:id', getUserById)
 server.get('/api/users', getUsers)
 server.get('*', handleDefault)
 
+server.post('/api/users', (req, res) =>{
+    const userInfo= req.body;
+
+    db.insert(userInfo)
+        .then(user =>{
+            res.status(201).json({success: true, user})
+        })
+        .catch(error=>{
+            res.status(500).json({success:false, error})
+        })
+})
+
+server.delete('/api/users/:id', (req, res)=>{
+    const {id} = req.params;
+
+    db.remove(id)
+        .then(deleted =>{
+            if(deleted){
+                res.status(204).end()
+            }else{
+                res.status(404).json({success: false, message: 'Could Not find the user'})
+            }
+        })
+        .catch(error =>{
+            res.status(500).json({success: false, error})
+        })
+})
+
+server.put('/api/users/:id', (req, res) =>{
+    const {id} = req.params;
+    const edited = req.body;
+
+    db.update(id, edited)
+        .then(data => {
+            if (data){
+                res.status(200).json({success: true, data})
+            }else {
+                res.status(404).json({success: false, message: "Could not find the user"})
+            }
+        })
+        .catch(error =>{
+            res.status(500).json({success:false, error})
+        })
+});
+
 function getUserById(req, res){
-    
     const { id } = req.params;
 
     db.findById(id)

@@ -14,14 +14,18 @@ server.get('/api/users', getUsers)
 server.get('*', handleDefault)
 
 server.post('/api/users', (req, res) =>{
-    const userInfo= req.body;
+    const userInfo = req.body;
 
     db.insert(userInfo)
         .then(user =>{
-            res.status(201).json({success: true, user})
+            if(user.name && user.bio){
+                res.status(201).json({success: true, user})
+            }else {
+                res.status(400).json({success : false, message: "Please provide name and bio for the user"})
+            }
         })
         .catch(error=>{
-            res.status(500).json({success:false, error})
+            res.status(500).json({success:false, message: "There was an error while saving the user to the database"})
         })
 })
 
@@ -33,11 +37,11 @@ server.delete('/api/users/:id', (req, res)=>{
             if(deleted){
                 res.status(204).end()
             }else{
-                res.status(404).json({success: false, message: 'Could Not find the user'})
+                res.status(404).json({success: false, message: "The user with the specified ID does not exist."})
             }
         })
         .catch(error =>{
-            res.status(500).json({success: false, error})
+            res.status(500).json({success: false, message: "The user could not be removed"})
         })
 })
 
@@ -47,14 +51,18 @@ server.put('/api/users/:id', (req, res) =>{
 
     db.update(id, edited)
         .then(data => {
-            if (data){
-                res.status(200).json({success: true, data})
-            }else {
-                res.status(404).json({success: false, message: "Could not find the user"})
+           if (!data){
+                res.status(404).json({success: false, message: "The user with the specified ID does not exist."})
+           }
+        //    else if (!data.name || !data.bio){
+        //         res.status(400).json({success: false, message: "Please provide name and bio for the user."})
+        //     } 
+            else{
+                res.status(200).json({success: true, data}) 
             }
         })
         .catch(error =>{
-            res.status(500).json({success:false, error})
+            res.status(500).json({success:false, message:"The user information could not be modified."})
         })
 });
 
@@ -63,22 +71,24 @@ function getUserById(req, res){
 
     db.findById(id)
         .then(data =>{
-            console.log(data)
-            res.status(200).json(data)
+            if(data){
+                res.status(200).json({success: true, data})
+            }else {
+                res.status(404).json({success:false, message: "The user with the specified ID does not exist."})
+            }
         })
         .catch(error=>{
-            console.log(error)
+            res.status(500).json({success: false, message: "The users information could not be retrieved."})        
         })
 }
 
 function getUsers (req, res){
     db.find()
         .then(data=>{
-            console.log(data)
-            res.json(data)
+            res.status(200).json({success: true, data})
         })
         .catch(error=>{
-            console.log(error)
+            res.status(500).json({success: false, message: "The users information could not be retrieved."})        
         })
 }
 

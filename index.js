@@ -1,10 +1,13 @@
 // implement your API here
 
+require('dotenv').config();
+
 const express = require('express')
 const cors = require('cors')
 const db = require('./data/db')
 
 const server = express()
+const port = process.env.PORT
 
 server.use(cors())
 server.use(express.json())
@@ -96,8 +99,8 @@ function handleDefault (req, res){
     res.json('Test Succeeded!')
 }
 
-server.listen(process.env.port || 3000, () => {
-    console.log('listening on ' + (process.env.port || 3000))
+server.listen(port, () => {
+    console.log('listening on ' + port)
 })
 
 

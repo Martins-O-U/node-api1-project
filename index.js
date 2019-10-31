@@ -1,10 +1,13 @@
 // implement your API here
 
+require('dotenv').config();
+
 const express = require('express')
 const cors = require('cors')
 const db = require('./data/db')
 
 const server = express()
+const port = process.env.PORT
 
 server.use(cors())
 server.use(express.json())
@@ -96,6 +99,35 @@ function handleDefault (req, res){
     res.json('Test Succeeded!')
 }
 
-server.listen(process.env.port || 3000, () => {
-    console.log('listening on ' + (process.env.port || 3000))
+server.listen(port, () => {
+    console.log('listening on ' + port)
 })
+
+
+// server.put('/api/users/:id', (req, res) => {
+//     const { name, bio } = req.body;
+  
+//     if (!name || !bio) {
+//       res
+//         .status(400)
+//         .json({ errorMessage: 'Please provide name and bio for the user.' });
+//     } else {
+//       Users.update(req.params.id, req.body)
+//         .then(user => {
+//           if (user) {
+//             res.status(200).json(user);
+//           } else {
+//             res
+//               .status(404)
+//               .json({
+//                 message: 'The user with the specified ID does not exist.',
+//               });
+//           }
+//         })
+//         .catch(() => {
+//           res.status(500).json({
+//             errorMessage: 'The user information could not be modified.',
+//           });
+//         });
+//     }
+//   });
